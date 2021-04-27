@@ -79,7 +79,7 @@ def dec_to_sex(coords):
 
 def resolution(wavelength, diameter):
     """
-    Calculate the resolution of a telescope, in degrees/arcseconds.
+    Calculate the resolution of a telescope, in degrees and arcseconds.
 
     Uses the approximation resolution ~ wavelength / diameter.
 
@@ -97,6 +97,36 @@ def resolution(wavelength, diameter):
     resolution_degrees = math.degrees(wavelength / diameter)
     resolution_sex = dec_to_sex([0, resolution_degrees])[1]
     return resolution_degrees, resolution_sex
+
+def arcsec_to_rad(angle):
+    """
+    Convert an angle from arcseconds to radians.
+
+    Paramters
+    ---------
+    angle : the angle, in arcseconds, a float or int.
+
+    Returns
+    -------
+    The angle in radians.
+    """
+    # pi/180 rad per degree, 1/3600 degrees per arcsec
+    return angle * math.pi / (180 * 3600)
+
+def rad_to_arcsec(angle):
+    """
+    Convert an angle from radians to arcseconds.
+
+    Parameters
+    ----------
+    angle : the angle, in radians, a float or int.
+
+    Returns
+    -------
+    The angle in arcseconds.
+    """
+    # 180/pi degree per rad, 3600 arcsec per degree
+    return angle * (180 / math.pi) * 3600
 
 def main():
     """Run some examples of the functions included."""
