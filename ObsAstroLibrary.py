@@ -62,17 +62,17 @@ def dec_to_sex(coords):
 
     if type(right_asc_inp) is str:
         if right_asc_inp.startswith('-'):
-            right_asc *= -1
+            right_asc = '-' + right_asc
     else:
         if right_asc_inp < 0:
-            right_asc *= -1
+            right_asc = '-' + right_asc
 
     if type(declination_inp) is str:
         if declination_inp.startswith('-'):
-            declination *= -1
+            declination = '-' + declination
     else:
         if declination_inp < 0:
-            declination *= -1
+            declination = '-' + declination
 
     return [right_asc, declination]
 
