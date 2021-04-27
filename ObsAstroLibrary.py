@@ -132,11 +132,24 @@ def main():
     """Run some examples of the functions included."""
 
     # --- Resolution ---
-    print("Here are some examples of the `resolution` function:")
+    print("\n\nHere are some examples of the `resolution` function:")
     print("For a radio telescope:")
-    print(f"λ = {λ:=0.06}m, D = {D:=25}m, returns:\n{resolution(λ, D)}")
+    λ = 0.06; D = 25
+    print(f"\tλ = {λ}m, D = {D}m, returns: {resolution(λ, D)}")
+
     print("For a visible light telescope:")
-    print(f"λ = {λ:=5E-7}m, D = {D:=4.2}m, returns:\n{resolution(λ, D)}")
+    λ = 5E-7; D = 4.2
+    print(f"\tλ = {λ}m, D = {D}m, returns: {resolution(λ, D)}")
+
+    # --- Converting between arcseconds and radians ---
+    print("\n\nHere are some examples of the `arcsec_to_rad` and `rad_to_arcsec` functions:")
+    print("Converting arcseconds to radians:")
+    θ = 0.5
+    print(f'\tθ = {θ}" -> {arcsec_to_rad(θ)} rad')
+
+    print("Converting from radians to arcseconds:")
+    θ = 0.0001
+    print(f'\tθ = {θ} rad -> {rad_to_arcsec(θ)}"')
 
 
 if __name__ == "__main__":
