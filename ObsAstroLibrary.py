@@ -1,6 +1,7 @@
 import math
 import numpy as np
 
+
 def sex_to_dec(coords):
     """
     Convert from sexegesimal coordinates to decimal degrees.
@@ -30,7 +31,6 @@ def sex_to_dec(coords):
         declination *= -1
 
     return [right_asc, declination]
-
 
 def dec_to_sex(coords):
     """
@@ -75,7 +75,6 @@ def dec_to_sex(coords):
             declination *= -1
 
     return [right_asc, declination]
-
 
 def resolution(wavelength, diameter):
     """
@@ -128,8 +127,94 @@ def rad_to_arcsec(angle):
     # 180/pi degree per rad, 3600 arcsec per degree
     return angle * (180 / math.pi) * 3600
 
+def appmag_from_dist(M, d, A=0):
+    """
+    Calculate the apparent magnitude from the absolute magnitude and distance.
+
+    Uses M = m - 5log_10(d / 10pc) - A, where:
+        M is abs. magnitude
+        m is apparent magnitude
+        d is the distance, in parsecs
+        A is the extinction
+
+    Parameters
+    ----------
+    M : Absolute magnitude, as an int or float.
+    d : Distance, in parsecs, as an int or float.
+    A : Extinction in terms of magnitude, as an int or float. If not specified,
+    the default value of 0 is used to represent no extinction.
+
+    Returns
+    -------
+    m, the apparent magnitude, as a float.
+    """
+    return M + 5*math.log10(d / 10) + A
+
+def absmag_from_dist(m, d, A=0):
+    """
+    Calculate the absolute magnitude from the apparent magnitude and distance.
+
+    Uses M = m - 5log_10(d / 10pc) - A, where:
+        M is abs. magnitude
+        m is apparent magnitude
+        d is the distance, in parsecs
+        A is the extinction
+
+    Parameters
+    ----------
+    m : Apparent magnitude, as an int or float.
+    d : Distance, in parsecs, as an int or float.
+    A : Extinction in terms of magnitude, as an int or float. If not specified,
+    the default value of 0 is used to represent no extinction.
+
+    Returns
+    -------
+    M, the absolute magnitude, as a float.
+    """
+    return m - 5*math.log10(d / 10)
+
+def dist_from_mag(m, M, A=0):
+    """
+    Calculate the distance from the absolute and apparent magnitudes.
+
+    Uses M = m - 5log_10(d / 10pc) - A, where:
+        M is abs. magnitude
+        m is apparent magnitude
+        d is the distance, in parsecs
+        A is the extinction
+
+    Parameters
+    ----------
+    m : Apparent magnitude, as an int or float.
+    M : Absolute magnitude, as an int or float.
+    A : Extinction in terms of magnitude, as an int or float. If not specified,
+    the default value of 0 is used to represent no extinction.
+
+    Returns
+    -------
+    d, the distance in parsecs, as a float.
+    """
+    exponent = (m - M - A) / 5 + 1
+    return math.pow(10, exponent)
+
 def main():
     """Run some examples of the functions included."""
+
+
+    # --- Coordinate Conversions ---
+    print(("\n\nHere are some examples of the `sex_to_dec`"
+           " and `dec_to_sex` functions:"))
+
+    print("Going from decimal degrees to sexegesimal:")
+    coords = [25, 27.55]
+    RA, Dec = dec_to_sex(coords)
+    print(f"\t(RA, Dec) = ({coords[0]}, {coords[1]}) -> ({RA}, {Dec})")
+
+    print("Going from sexegesimal to decimal degrees:")
+    coords = ["03:32:30.14", "-27:25:10.5"]
+    RA, Dec = sex_to_dec(coords)
+    print(f"\t(RA, Dec) = ({coords[0]}, {coords[1]}) -> ({RA}, {Dec})")
+
 
     # --- Resolution ---
     print("\n\nHere are some examples of the `resolution` function:")
@@ -141,8 +226,10 @@ def main():
     λ = 5E-7; D = 4.2
     print(f"\tλ = {λ}m, D = {D}m, returns: {resolution(λ, D)}")
 
+
     # --- Converting between arcseconds and radians ---
-    print("\n\nHere are some examples of the `arcsec_to_rad` and `rad_to_arcsec` functions:")
+    print(("\n\nHere are some examples of the `arcsec_to_rad`"
+           " and `rad_to_arcsec` functions:"))
     print("Converting arcseconds to radians:")
     θ = 0.5
     print(f'\tθ = {θ}" -> {arcsec_to_rad(θ)} rad')
@@ -150,6 +237,26 @@ def main():
     print("Converting from radians to arcseconds:")
     θ = 0.0001
     print(f'\tθ = {θ} rad -> {rad_to_arcsec(θ)}"')
+
+
+    # --- Magnitudes and Distances ---
+    print(("\n\nHere are some examples of the `appmag_from_dist`,"
+           "`absmag_from_dist`, and `dist_from_mag` functions:"))
+
+    print("Going from a distance and an absolute magnitude:")
+    M = 15; d = 300
+    print(f"\tM = {M}, d = {d} -> m = {appmag_from_dist(M=15, d=300)}")
+
+    print("Going from a distance and an apparent magnitude:")
+    m = 5; d = 100
+    print(f"\tm = {m}, d = {d} -> M = {absmag_from_dist(m, d)}")
+
+    m = 15; M = 5.4; A = 3.7
+    print("Calculating distance, not accounting for extinction:")
+    print(f"\tm = {m}, M = {M} -> d = {dist_from_mag(m, M)}")
+
+    print("Calculating distance, accounting for extinction:")
+    print(f"\tm = {m}, M = {M}, A = {A} -> d = {dist_from_mag(m, M, A)}")
 
 
 if __name__ == "__main__":
