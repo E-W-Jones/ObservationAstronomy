@@ -2,6 +2,12 @@ import math
 import numpy as np
 
 
+def help():
+    """Prints a list of the included functions."""
+    function_list = ["sex_to_dec", "dec_to_sex", "resolution", "arcsec_to_rad",
+                     "rad_to_arcsec", "appmag_from_dist", "absmag_from_dist", "dist_from_mag"]
+    print("\n".join(function_list))
+
 def sex_to_dec(coords):
     """
     Convert from sexegesimal coordinates to decimal degrees.
