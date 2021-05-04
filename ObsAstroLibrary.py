@@ -5,7 +5,8 @@ import numpy as np
 def help():
     """Prints a list of the included functions."""
     function_list = ["sex_to_dec", "dec_to_sex", "resolution", "arcsec_to_rad",
-                     "rad_to_arcsec", "appmag_from_dist", "absmag_from_dist", "dist_from_mag"]
+                     "rad_to_arcsec", "appmag_from_dist", "absmag_from_dist", "dist_from_mag",
+                     "beta_from_R"]
     print("\n".join(function_list))
 
 def sex_to_dec(coords):
@@ -202,6 +203,12 @@ def dist_from_mag(m, M, A=0):
     """
     exponent = (m - M - A) / 5 + 1
     return math.pow(10, exponent)
+
+def beta_from_R(R, B=4400, V=5500):
+    """
+    For A_λ∝λ^β, R = A_V / E(B-V), calculate β.
+    """
+    return math.log(1 + (1/R), (B / V))
 
 def main():
     """Run some examples of the functions included."""
