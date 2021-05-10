@@ -51,7 +51,7 @@ def dec_to_sex(coords):
 
     Returns
     -------
-    A list of the RA and Dec, as
+    A list of the RA and Dec, as strings.
 
     """
     right_asc_inp, declination_inp = coords
@@ -206,13 +206,24 @@ def dist_from_mag(m, M, A=0):
 
 def beta_from_R(R, B=4400, V=5500):
     """
-    For A_λ∝λ^β, R = A_V / E(B-V), calculate β.
+    For A_λ ∝ λ^β, R = A_V / E(B-V), calculate β.
+    
+    By default, talking about blue and visible wavelength bands, but these could easily be substituted for a different band.
+    
+    Parameters
+    ----------
+    R : The ratio of extinction to colour excess, as a float or int.
+    B : The central wavelength in the 'blue' band, 4400Å by default, as a float or int.
+    V : The central wavelength in the 'visible' band, 5500Å by default, as a float or int.
+    
+    Returns
+    -------
+    The value β, that describes the power law relation between wavelength and extinction, as a float.
     """
     return math.log(1 + (1/R), (B / V))
 
 def main():
     """Run some examples of the functions included."""
-
 
     # --- Coordinate Conversions ---
     print(("\n\nHere are some examples of the `sex_to_dec`"
