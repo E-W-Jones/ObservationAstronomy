@@ -9,6 +9,7 @@ def help():
                      "beta_from_R"]
     print("\n".join(function_list))
 
+    
 def sex_to_dec(coords):
     """
     Convert from sexegesimal coordinates to decimal degrees.
@@ -38,6 +39,7 @@ def sex_to_dec(coords):
         declination *= -1
 
     return [right_asc, declination]
+
 
 def dec_to_sex(coords):
     """
@@ -83,6 +85,7 @@ def dec_to_sex(coords):
 
     return [right_asc, declination]
 
+
 def resolution(wavelength, diameter):
     """
     Calculate the resolution of a telescope, in degrees and arcseconds.
@@ -104,6 +107,7 @@ def resolution(wavelength, diameter):
     resolution_sex = dec_to_sex([0, resolution_degrees])[1]
     return resolution_degrees, resolution_sex
 
+
 def arcsec_to_rad(angle):
     """
     Convert an angle from arcseconds to radians.
@@ -119,6 +123,7 @@ def arcsec_to_rad(angle):
     # pi/180 rad per degree, 1/3600 degrees per arcsec
     return angle * math.pi / (180 * 3600)
 
+
 def rad_to_arcsec(angle):
     """
     Convert an angle from radians to arcseconds.
@@ -133,6 +138,7 @@ def rad_to_arcsec(angle):
     """
     # 180/pi degree per rad, 3600 arcsec per degree
     return angle * (180 / math.pi) * 3600
+
 
 def appmag_from_dist(M, d, A=0):
     """
@@ -157,6 +163,7 @@ def appmag_from_dist(M, d, A=0):
     """
     return M + 5*math.log10(d / 10) + A
 
+
 def absmag_from_dist(m, d, A=0):
     """
     Calculate the absolute magnitude from the apparent magnitude and distance.
@@ -179,6 +186,7 @@ def absmag_from_dist(m, d, A=0):
     M, the absolute magnitude, as a float.
     """
     return m - 5*math.log10(d / 10)
+
 
 def dist_from_mag(m, M, A=0):
     """
@@ -204,6 +212,7 @@ def dist_from_mag(m, M, A=0):
     exponent = (m - M - A) / 5 + 1
     return math.pow(10, exponent)
 
+
 def beta_from_R(R, B=4400, V=5500):
     """
     For A_λ ∝ λ^β, R = A_V / E(B-V), calculate β.
@@ -221,6 +230,70 @@ def beta_from_R(R, B=4400, V=5500):
     The value β, that describes the power law relation between wavelength and extinction, as a float.
     """
     return math.log(1 + (1/R), (B / V))
+
+
+def sunRA(date=None, month=None):
+    """
+    Calculate the Right Ascension of the Sun (only roughly).
+
+    If no arguments given, finds the RA of the Sun on the current date.
+
+    Parameters
+    ----------
+    date : A date object of the date when you want to calculate the Sun's RA.
+    Optional.
+    month : The month when you want to calculate the Sun's RA, also optional.
+
+    Returns
+    -------
+    The Right Ascension of the Sun, in decimal hours.
+
+    """
+    today = datetime.date.today()
+    zeropoint = datetime.date(today.year, 3, 20)  # 20th of March
+
+    if date is None and month is None:
+        date = today
+
+    if date is None and month is not None:
+        try:
+            month = int(month)
+        except ValueError as e:
+            raise e("Please input a month that is an integer from 1 to 12.")
+        ra_hours = (24 / 12) * abs(month - zeropoint.month)
+        return ra_hours
+
+    if not isinstance(date, (datetime.date, datetime.datetime)):
+        raise TypeError("Date should be given as a datetime object.")
+
+    ra_hours = (24/365.25) * abs((date - zeropoint).days)
+    return ra_hours
+
+
+def when_to_observe(RA):
+    """
+    Calculate the best date to observe a body.
+
+    This will be when the RA is 12 hours out from the Sun.
+
+    Parameters
+    ----------
+    RA : The right ascension of the body, in decimal hours.
+
+    Returns
+    -------
+    A datetime object of the time to view the object.
+
+    """
+    # Find what the RA of the Sun should be
+    sun_RA = abs(RA - 12 % 24)
+    # Convert to days, add to zero point
+    today = datetime.date.today()
+    zeropoint = datetime.date(today.year, 3, 20)
+    difference = datetime.timedelta(days=(365.25/24) * sun_RA)
+    date = zeropoint + difference
+    return date
+
 
 def main():
     """Run some examples of the functions included."""
@@ -281,6 +354,21 @@ def main():
 
     print("Calculating distance, accounting for extinction:")
     print(f"\tm = {m}, M = {M}, A = {A} -> d = {dist_from_mag(m, M, A)}")
+    
+    
+    # --- Calculating Right Ascension of Sun, and when to observe bodies ---
+    print(("\n\nHere are some examples of the `sunRA` and `when_to_observe` "
+           "functions:"))
+    print(f"The RA of the Sun now:\n\t {sunRA()} hrs")
+    date = datetime.date(2022, 2, 13)
+    print(f"The RA of the sun on {date}:\n\t {sunRA(date)} hrs")
+    print(f"The RA of the sun in september:\n\t {sunRA(month=9)} hrs")
+
+    orion_sex = "05:55:10.3053"
+    # Divide by 15 to keep it as hours, else it's decimal degrees
+    orion_dec = sex_to_dec([orion_sex, "0"])[0] / 15
+    print((f"The ideal time to view Betelguese, with RA {orion_sex}:\n\t"
+           f"{when_to_observe(orion_dec)}"))
 
 
 if __name__ == "__main__":
